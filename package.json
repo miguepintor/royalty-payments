@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "pretest": "eslint .",
-    "test": "jest --silent --coverage",
+    "test": "jest --coverage",
     "testw": "jest --watch --verbose"
   },
   "repository": {
@@ -30,6 +30,7 @@
     "jest": "^24.9.0"
   },
   "dependencies": {
+    "bunyan": "^1.8.12",
     "ioredis": "^4.14.1",
     "ioredis-mock": "^4.16.3",
     "lodash.has": "^4.5.2"
