@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "pretest": "eslint .",
-    "test": "jest --silent "
+    "test": "jest --silent --coverage",
+    "testw": "jest --watch --verbose"
   },
   "repository": {
     "type": "git",
