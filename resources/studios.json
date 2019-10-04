@@ -1,0 +1,19 @@
+{
+	"studios": [{
+		"id": "665115721c6f44e49be3bd3e26606026",
+		"name": "HBO",
+		"payment": 12
+	}, {
+		"id": "8d713a092ebf4844840cb90d0c4a2030",
+		"name": "Sky UK",
+		"payment": 14.67
+	}, {
+		"id": "75aee18236484501b209aa36f95c7e0f",
+		"name": "Showtime",
+		"payment": 13.45
+	}, {
+		"id": "49924ec6ec6c4efca4aa8b0779c89406",
+		"name": "Fox",
+		"payment": 17.34
+	}]
+}
