@@ -1,4 +1,6 @@
-const { arrayToIdMap } = require('../../../../src/modules/resources_loader');
+const { arrayToIdMap, episodesMap, studiosMap } = require('../../../../src/modules/resources_loader');
+const { episodes } = require('../../../../resources/episodes');
+const { studios } = require('../../../../resources/studios');
 
 describe('Resources Loader', () => {
   describe('arrayToIdMap()', () => {
@@ -21,6 +23,16 @@ describe('Resources Loader', () => {
     it('when the input is an array of elements without an id property it should return an empty map', () => {
       const sampleArray = [1, { prop: 'a' }, {}, undefined, { prop: 'b' }];
       expect(arrayToIdMap(sampleArray)).toEqual({});
+    });
+  });
+  describe('episodesMap', () => {
+    it('should contain all the elements of the raw resource', () => {
+      episodes.forEach((episode) => expect(episode).toEqual(episodesMap[episode.id]));
+    });
+  });
+  describe('studiosMap', () => {
+    it('should contain all the elements of the raw resource', () => {
+      studios.forEach((studio) => expect(studio).toEqual(studiosMap[studio.id]));
     });
   });
 });
