@@ -19,32 +19,23 @@ describe('Redis store', () => {
     it('when the studio id doesnt exist it should initialize the counter to 1', async () => {
       const sampleStudioId = 'aaaaa';
       increaseRoyaltiesCounter(sampleStudioId);
-      expect(await redisMock.get(sampleStudioId)).toEqual(1);
+      expect(await redisMock.get(sampleStudioId)).toEqual('1');
     });
     it('when the studio id exists it should increment the counter in 1', async () => {
       const sampleStudioId = 'aaaaa';
       await redisMock.set(sampleStudioId, 23);
       increaseRoyaltiesCounter(sampleStudioId);
-      expect(await redisMock.get(sampleStudioId)).toEqual(24);
-    });
-    it.skip('when the studio id exists it should throw an error when we try to exceed the maximum allowed', async () => {
-      const sampleStudioId = 'aaaaa';
-      await redisMock.set(sampleStudioId, 9223372036854775807);
-      increaseRoyaltiesCounter(sampleStudioId);
-      await expect(redisMock.get(sampleStudioId)).rejects.toThrow('');
+      expect(await redisMock.get(sampleStudioId)).toEqual('24');
     });
   });
   describe('getRoyaltiesCounter()', () => {
     it('when the studio id doesnt exist it should return 0', async () => {
-      const sampleStudioId = 'aaaaa';
-      await getRoyaltiesCounter(sampleStudioId);
-      expect(await redisMock.get(sampleStudioId)).toEqual(0);
+      expect(await getRoyaltiesCounter('aaaaa')).toEqual(0);
     });
     it('when the studio id exists it should return its counter', async () => {
       const sampleStudioId = 'aaaaa';
       await redisMock.set(sampleStudioId, 23);
-      await getRoyaltiesCounter(sampleStudioId);
-      expect(await redisMock.get(sampleStudioId)).toEqual(23);
+      expect(await getRoyaltiesCounter(sampleStudioId)).toEqual(23);
     });
   });
   describe('getAllRoyaltiesCounters()', () => {
