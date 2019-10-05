@@ -9,3 +9,6 @@ coverage
 
 # dotenv environment variables file
 .env
+
+# visual studio config file
+launch.json
