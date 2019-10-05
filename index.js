@@ -1,6 +1,6 @@
 const store = require('./src/modules/store');
-const app = require('./src/app')(store.redis());
 const logger = require('./src/modules/logger');
+const app = require('./src/app')(store.redis(logger));
 
 const port = process.env.PORT || 3000;
 

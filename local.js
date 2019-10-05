@@ -1,6 +1,6 @@
 const store = require('./src/modules/store');
-const app = require('./src/app')(store.inMemory());
 const logger = require('./src/modules/logger');
+const app = require('./src/app')(store.inMemory(logger));
 
 const port = process.env.PORT || 3000;
 

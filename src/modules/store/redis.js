@@ -27,21 +27,26 @@ const errorHandler = (func) => async (logger, ...args) => {
   }
 };
 
-const init = (client) => ({
-  studios: {
-    increaseViewings: errorHandler(increaseViewings(client)),
-    getViewings: errorHandler(getViewings(client)),
-    getAllStudiosViewings: errorHandler(getAllStudiosViewings(client)),
-    resetAllViewings: errorHandler(resetAllViewings(client)),
-  },
-  getClient: () => client,
-});
+const init = (client, logger) => {
+  client.on('error', (error) => {
+    logger.error(error, '[Redis Store] Error');
+  });
+  return {
+    studios: {
+      increaseViewings: errorHandler(increaseViewings(client)),
+      getViewings: errorHandler(getViewings(client)),
+      getAllStudiosViewings: errorHandler(getAllStudiosViewings(client)),
+      resetAllViewings: errorHandler(resetAllViewings(client)),
+    },
+    getClient: () => client,
+  };
+};
 
 const port = process.env.REDIS_PORT || 6379;
 const host = process.env.REDIS_HOST || '127.0.0.1';
 
-module.exports.initRedis = () => init(new Redis({ port, host }));
-module.exports.initInMemory = () => init(new RedisInMemory());
+module.exports.initRedis = (logger) => init(new Redis({ port, host }), logger);
+module.exports.initInMemory = (logger) => init(new RedisInMemory(), logger);
 
 module.exports.increaseViewings = increaseViewings;
 module.exports.getViewings = getViewings;
