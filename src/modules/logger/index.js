@@ -5,7 +5,6 @@ const options = (level) => ({
   streams: [{
     level,
     stream: process.stdout,
-    type: 'raw',
   }],
   serializers: {
     err: bunyan.stdSerializers.err,
