@@ -11,12 +11,21 @@ describe('Validator', () => {
       const { error } = viewings(query);
       expect(error).toBeNull();
     });
+    it('should return an error when the query contains unknown fields', () => {
+      const query = {
+        episode: episodes[0].id,
+        customer: 'GUID',
+        another: 'field',
+      };
+      const { error } = viewings(query);
+      expect(error.message).toEqual('"another" is not allowed');
+    });
     it('should return an error when episode is not present in the query', () => {
       const query = {
         customer: 'GUID',
       };
       const { error } = viewings(query);
-      expect(error.message).toEqual('');
+      expect(error.message).toEqual('child "episode" fails because ["episode" is required]');
     });
     it('should return an error when episode is not a string in the query', () => {
       const query = {
@@ -24,7 +33,7 @@ describe('Validator', () => {
         customer: 'GUID',
       };
       const { error } = viewings(query);
-      expect(error.message).toEqual('');
+      expect(error.message).toEqual('child "episode" fails because ["episode" must be a string]');
     });
     it('should return an error when episode is present in the query but doesnt exist in the system', () => {
       const query = {
@@ -32,22 +41,22 @@ describe('Validator', () => {
         customer: 'GUID',
       };
       const { error } = viewings(query);
-      expect(error.message).toEqual('');
+      expect(error.message).toEqual('child "episode" fails because ["episode" does not exist in the system]');
     });
     it('should return an error when customer is not present in the query', () => {
       const query = {
-        episode: 'GUID',
+        episode: episodes[0].id,
       };
       const { error } = viewings(query);
-      expect(error.message).toEqual('');
+      expect(error.message).toEqual('child "customer" fails because ["customer" is required]');
     });
     it('should return an error when customer is not a string in the query', () => {
       const query = {
-        episode: 'GUID',
+        episode: episodes[0].id,
         customer: true,
       };
       const { error } = viewings(query);
-      expect(error.message).toEqual('');
+      expect(error.message).toEqual('child "customer" fails because ["customer" must be a string]');
     });
   });
 });
