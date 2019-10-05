@@ -23,20 +23,28 @@ beforeEach(async () => {
 });
 
 describe('Integration Tests: app with redis', () => {
-  describe('royaltymanager/reset', () => {
+  describe('/royaltymanager/*', () => {
+    it('Should log all operations', async () => {
+      const sampleBody = { a: 'property' };
+      await request(app).put('/royaltymanager/whatever').send(sampleBody);
+      expect(loggerMock.info).toHaveBeenCalledTimes(1);
+      expect(loggerMock.info).toHaveBeenCalledWith({ query: {}, body: sampleBody }, '[Royalty Manager] PUT request recived to /whatever');
+    });
+  });
+  describe('/royaltymanager/reset', () => {
     it('Should reset all counters to 0 and the response status must be 202', async () => {
-      const response = await request(app).post().send({});
+      await redisMock.set('aaaa', 23);
+      const response = await request(app).post('/royaltymanager/reset').send({});
       expect(response.status).toEqual(202);
       expect(response.body).toEqual({});
-      expect(redisMock.keys('*')).toEqual([]);
-      expect(loggerMock.info).toHaveBeenCalled();
+      expect(await redisMock.keys('*')).toEqual([]);
     });
     it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
       const appWithNoStore = appInitilizator();
-      const response = await request(appWithNoStore).post().send({});
+      const response = await request(appWithNoStore).post('/royaltymanager/reset').send({});
       expect(response.status).toEqual(500);
-      expect(response.body).toEqual('Internal server error');
-      expect(loggerMock.error).toHaveBeenCalled();
+      expect(response.text).toEqual('Internal server error');
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
     });
   });
 });
