@@ -1,7 +1,7 @@
 const bunyan = require('bunyan');
 
 const options = (level) => ({
-  name: 'pricing-api',
+  name: 'royalty-payments',
   streams: [{
     level,
     stream: process.stdout,

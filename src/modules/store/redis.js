@@ -32,6 +32,7 @@ const init = (client, logger) => ({
   getRoyaltiesCounter: errorHandler(getRoyaltiesCounter(client), logger),
   getAllRoyaltiesCounters: errorHandler(getAllRoyaltiesCounters(client), logger),
   resetAllCounters: errorHandler(resetAllCounters(client), logger),
+  getClient: () => client,
 });
 
 module.exports.initRedis = (logger) => init(new Redis(), logger);
