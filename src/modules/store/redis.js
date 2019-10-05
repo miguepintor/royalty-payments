@@ -38,8 +38,8 @@ const init = (client) => ({
 });
 
 module.exports.initRedis = () => init(new Redis({
-  port: process.env.REDIS_PORT,
-  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT || 6379,
+  host: process.env.REDIS_HOST || '127.0.0.1',
 }));
 module.exports.initInMemory = () => init(new RedisInMemory());
 
