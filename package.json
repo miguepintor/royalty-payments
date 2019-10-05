@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "local": "node local.js",
     "pretest": "eslint .",
     "test": "jest --coverage",
     "testw": "jest --watch --verbose"
