@@ -1,4 +1,4 @@
 const joi = require('joi');
-const viewingsSchema = require('./viewingsSchema');
+const viewingSchema = require('./viewingSchema');
 
-module.exports.viewings = (query) => joi.validate(query, viewingsSchema);
+module.exports.viewing = (query) => joi.validate(query, viewingSchema);
