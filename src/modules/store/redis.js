@@ -37,7 +37,10 @@ const init = (client) => ({
   getClient: () => client,
 });
 
-module.exports.initRedis = () => init(new Redis());
+module.exports.initRedis = () => init(new Redis({
+  port: process.env.REDIS_PORT,
+  host: process.env.REDIS_HOST,
+}));
 module.exports.initInMemory = () => init(new RedisInMemory());
 
 module.exports.increaseRoyaltiesCounter = increaseRoyaltiesCounter;
