@@ -105,7 +105,7 @@ describe('Integration Tests: app with redis', () => {
         {
           rightsownerId: '49924ec6ec6c4efca4aa8b0779c89406',
           rightsowner: 'Fox',
-          royalty: 52.019999999999996,
+          royalty: 52.02,
           viewings: 3,
         },
       ]);

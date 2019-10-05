@@ -1,4 +1,6 @@
 const express = require('express');
+const Decimal = require('decimal.js');
+
 const validator = require('../../modules/validator');
 const { episodesMap, studiosMap } = require('../../modules/resources_loader');
 
@@ -42,8 +44,10 @@ router.get('/payments', async ({ store, logger }, res, next) => {
     const response = Object.keys(studiosMap).map((studioId) => ({
       rightsownerId: studioId,
       rightsowner: studiosMap[studioId].name,
-      royalty: royaltiesCounters[studioId]
-        ? royaltiesCounters[studioId] * studiosMap[studioId].payment : 0,
+      royalty: Decimal.mul(
+        new Decimal(royaltiesCounters[studioId] || 0),
+        new Decimal(studiosMap[studioId].payment),
+      ).toNumber(),
       viewings: royaltiesCounters[studioId] || 0,
     }));
     res.status(200).send(response);
@@ -60,7 +64,10 @@ router.get('/payments/:studioId', async ({ params: { studioId }, store, logger }
       const royaltiesCounter = await store.royalties.getRoyaltiesCounter(logger, studioId);
       res.status(200).send({
         rightsowner: studiosMap[studioId].name,
-        royalty: royaltiesCounter ? royaltiesCounter * studiosMap[studioId].payment : 0,
+        royalty: Decimal.mul(
+          new Decimal(royaltiesCounter),
+          new Decimal(studiosMap[studioId].payment),
+        ).toNumber(),
         viewings: royaltiesCounter || 0,
       });
     }
