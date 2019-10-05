@@ -148,4 +148,39 @@ describe('Integration Tests: app with redis', () => {
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
     });
   });
+  describe('/royaltymanager/payments/:studioId', () => {
+    it('When the studio is not found it should return a 404 and empty body', async () => {
+      const response = await request(app).get('/royaltymanager/payments/x');
+      expect(response.status).toEqual(404);
+      expect(response.body).toEqual({});
+    });
+    it('Should return an object with the viewings and payments for the given studio, the response status must be 200', async () => {
+      await redisMock.set('665115721c6f44e49be3bd3e26606026', 234);
+
+      const response = await request(app).get('/royaltymanager/payments/665115721c6f44e49be3bd3e26606026');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        rightsowner: 'HBO',
+        royalty: 0,
+        viewings: 234,
+      });
+    });
+    it('Should return an object with payments equals to 0 when viewings are 0 for the given studio, the response status must be 200', async () => {
+      const response = await request(app).get('/royaltymanager/payments/8d713a092ebf4844840cb90d0c4a2030');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        rightsownerId: '8d713a092ebf4844840cb90d0c4a2030',
+        rightsowner: 'Sky UK',
+        royalty: 0,
+        viewings: 0,
+      });
+    });
+    it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
+      const appWithNoStore = appInitilizator();
+      const response = await request(appWithNoStore).get('/royaltymanager/payments/8d713a092ebf4844840cb90d0c4a2030');
+      expect(response.status).toEqual(500);
+      expect(response.text).toEqual('Internal server error');
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+    });
+  });
 });
