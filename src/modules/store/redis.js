@@ -16,13 +16,29 @@ const getAllRoyaltiesCounters = (client) => async () => {
 };
 const resetAllCounters = (client) => () => client.flushall();
 
-const init = (client) => ({
-  increaseRoyaltiesCounter: increaseRoyaltiesCounter(client),
-  getRoyaltiesCounter: getRoyaltiesCounter(client),
-  getAllRoyaltiesCounters: getAllRoyaltiesCounters(client),
-  resetAllCounters: resetAllCounters(client),
+const errorHandler = (func, logger) => async (...args) => {
+  try {
+    const returnedValue = await func(...args);
+    logger.info('[Redis Store] Operation executed successfully');
+    return returnedValue;
+  } catch (err) {
+    logger.error({ err }, '[Redis Store] Exception during the execution of a method');
+    throw err;
+  }
+};
+
+const init = (client, logger) => ({
+  increaseRoyaltiesCounter: errorHandler(increaseRoyaltiesCounter(client), logger),
+  getRoyaltiesCounter: errorHandler(getRoyaltiesCounter(client), logger),
+  getAllRoyaltiesCounters: errorHandler(getAllRoyaltiesCounters(client), logger),
+  resetAllCounters: errorHandler(resetAllCounters(client), logger),
 });
 
-module.exports.init = init;
-module.exports.initRedis = () => init(new Redis());
-module.exports.initInMemory = () => init(new RedisInMemory());
+module.exports.initRedis = (logger) => init(new Redis(), logger);
+module.exports.initInMemory = (logger) => init(new RedisInMemory(), logger);
+
+module.exports.increaseRoyaltiesCounter = increaseRoyaltiesCounter;
+module.exports.getRoyaltiesCounter = getRoyaltiesCounter;
+module.exports.getAllRoyaltiesCounters = getAllRoyaltiesCounters;
+module.exports.resetAllCounters = resetAllCounters;
+module.exports.errorHandler = errorHandler;
