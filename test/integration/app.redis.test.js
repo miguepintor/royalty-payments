@@ -1,7 +1,6 @@
 const request = require('supertest');
 const store = require('../../src/modules/store');
 const { init: appInitilizator } = require('../../src/app');
-const { episodes } = require('../../resources/episodes');
 
 // Mocking the whole logger module
 jest.mock('../../src/modules/logger', () => ({ child: jest.fn() }));
@@ -55,23 +54,95 @@ describe('Integration Tests: app with redis', () => {
       expect(response.text).toEqual('child "episode" fails because ["episode" is required]');
     });
     it('Should increase in 1 the studio royalty counter specified by the episode and the response status must be 202 with empty body', async () => {
-      const sampleEpisode = episodes[0];
       const query = {
-        episode: sampleEpisode.id,
+        episode: '6a1db5d6610a4c048d3df9a6268c68dc',
         customer: 'GUID',
       };
       const response = await request(app).post('/royaltymanager/viewing').send(query);
       expect(response.status).toEqual(202);
       expect(response.body).toEqual({});
-      expect(await redisMock.get(sampleEpisode.rightsowner)).toEqual('1');
+      expect(await redisMock.get('665115721c6f44e49be3bd3e26606026')).toEqual('1');
     });
     it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
       const query = {
-        episode: episodes[0].id,
+        episode: '6a1db5d6610a4c048d3df9a6268c68dc',
         customer: 'GUID',
       };
       const appWithNoStore = appInitilizator();
       const response = await request(appWithNoStore).post('/royaltymanager/viewing').send(query);
+      expect(response.status).toEqual(500);
+      expect(response.text).toEqual('Internal server error');
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('/royaltymanager/payments', () => {
+    it('Should return a list with all the studios payments and viewings, the response status must be 200', async () => {
+      await redisMock.set('665115721c6f44e49be3bd3e26606026', 234);
+      await redisMock.set('8d713a092ebf4844840cb90d0c4a2030', 42);
+      await redisMock.set('49924ec6ec6c4efca4aa8b0779c89406', 3);
+
+      const response = await request(app).get('/royaltymanager/payments');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          rightsownerId: '665115721c6f44e49be3bd3e26606026',
+          rightsowner: 'HBO',
+          royalty: 0,
+          viewings: 234,
+        },
+        {
+          rightsownerId: '8d713a092ebf4844840cb90d0c4a2030',
+          rightsowner: 'Sky UK',
+          royalty: 0,
+          viewings: 42,
+        },
+        {
+          rightsownerId: '75aee18236484501b209aa36f95c7e0f',
+          rightsowner: 'Showtime',
+          royalty: 0,
+          viewings: 0,
+        },
+        {
+          rightsownerId: '49924ec6ec6c4efca4aa8b0779c89406',
+          rightsowner: 'Fox',
+          royalty: 0,
+          viewings: 3,
+        },
+      ]);
+    });
+    it('Should return a list with all the studios payments equals to 0 when all viewings are 0, the response status must be 200', async () => {
+      const response = await request(app).get('/royaltymanager/payments');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          rightsownerId: '665115721c6f44e49be3bd3e26606026',
+          rightsowner: 'HBO',
+          royalty: 0,
+          viewings: 0,
+        },
+        {
+          rightsownerId: '8d713a092ebf4844840cb90d0c4a2030',
+          rightsowner: 'Sky UK',
+          royalty: 0,
+          viewings: 0,
+        },
+        {
+          rightsownerId: '75aee18236484501b209aa36f95c7e0f',
+          rightsowner: 'Showtime',
+          royalty: 0,
+          viewings: 0,
+        },
+        {
+          rightsownerId: '49924ec6ec6c4efca4aa8b0779c89406',
+          rightsowner: 'Fox',
+          royalty: 0,
+          viewings: 0,
+        },
+      ]);
+    });
+    it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
+      const appWithNoStore = appInitilizator();
+      const response = await request(appWithNoStore).get('/royaltymanager/payments');
       expect(response.status).toEqual(500);
       expect(response.text).toEqual('Internal server error');
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
