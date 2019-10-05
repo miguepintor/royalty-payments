@@ -1,9 +1,9 @@
 const Redis = require('ioredis-mock');
 const {
-  increaseRoyaltiesCounter,
-  getRoyaltiesCounter,
-  getAllRoyaltiesCounters,
-  resetAllCounters,
+  increaseViewings,
+  getViewings,
+  getAllStudiosViewings,
+  resetAllViewings,
   errorHandler,
 } = require('../../../../src/modules/store/redis');
 
@@ -20,47 +20,47 @@ beforeEach(async () => {
 });
 
 describe('Redis store', () => {
-  describe('increaseRoyaltiesCounter()', () => {
+  describe('increaseViewings()', () => {
     it('when the studio id doesnt exist it should initialize the counter to 1', async () => {
       const sampleStudioId = 'aaaaa';
-      await increaseRoyaltiesCounter(redisMock)(sampleStudioId);
+      await increaseViewings(redisMock)(sampleStudioId);
       expect(await redisMock.get(sampleStudioId)).toEqual('1');
     });
     it('when the studio id exists it should increment the counter in 1', async () => {
       const sampleStudioId = 'aaaaa';
       await redisMock.set(sampleStudioId, 23);
-      await increaseRoyaltiesCounter(redisMock)(sampleStudioId);
+      await increaseViewings(redisMock)(sampleStudioId);
       expect(await redisMock.get(sampleStudioId)).toEqual('24');
     });
   });
-  describe('getRoyaltiesCounter()', () => {
+  describe('getViewings()', () => {
     it('when the studio id doesnt exist it should return 0', async () => {
-      expect(await getRoyaltiesCounter(redisMock)('aaaaa')).toEqual(0);
+      expect(await getViewings(redisMock)('aaaaa')).toEqual(0);
     });
     it('when the studio id exists it should return its counter', async () => {
       const sampleStudioId = 'aaaaa';
       await redisMock.set(sampleStudioId, 23);
-      expect(await getRoyaltiesCounter(redisMock)(sampleStudioId)).toEqual(23);
+      expect(await getViewings(redisMock)(sampleStudioId)).toEqual(23);
     });
   });
-  describe('getAllRoyaltiesCounters()', () => {
+  describe('getAllStudiosViewings()', () => {
     it('when there are no studios ids it should return an empty object', async () => {
-      expect(await getAllRoyaltiesCounters(redisMock)()).toEqual({});
+      expect(await getAllStudiosViewings(redisMock)()).toEqual({});
     });
     it('when there are studios ids stored it should return a map with keys equals to studios ids and values equals to counters', async () => {
       await redisMock.set('aaaa', 23);
       await redisMock.set('bbbb', 667);
-      expect(await getAllRoyaltiesCounters(redisMock)()).toEqual({
+      expect(await getAllStudiosViewings(redisMock)()).toEqual({
         aaaa: 23,
         bbbb: 667,
       });
     });
   });
-  describe('resetAllCounters()', () => {
+  describe('resetAllViewings()', () => {
     it('should remove all counters stored', async () => {
       await redisMock.set('aaaa', 23);
       await redisMock.set('bbbb', 667);
-      await resetAllCounters(redisMock)();
+      await resetAllViewings(redisMock)();
       expect(await redisMock.keys('*')).toEqual([]);
     });
   });

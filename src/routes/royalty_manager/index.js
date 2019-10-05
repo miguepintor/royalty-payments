@@ -16,7 +16,7 @@ router.use(({
 
 router.post('/reset', async ({ store, logger }, res, next) => {
   try {
-    await store.royalties.resetAllCounters(logger);
+    await store.studios.resetAllViewings(logger);
     res.status(202).end();
   } catch (err) {
     logger.error({ err }, '[Royalty Manager] Exception during the reset execution');
@@ -29,7 +29,7 @@ router.post('/viewing', async ({ body, store, logger }, res, next) => {
     const { error } = validator.viewing(body);
     if (error) res.status(400).send(error.message);
     else {
-      await store.royalties.increaseRoyaltiesCounter(logger, episodesMap[body.episode].rightsowner);
+      await store.studios.increaseViewings(logger, episodesMap[body.episode].rightsowner);
       res.status(202).end();
     }
   } catch (err) {
@@ -40,15 +40,15 @@ router.post('/viewing', async ({ body, store, logger }, res, next) => {
 
 router.get('/payments', async ({ store, logger }, res, next) => {
   try {
-    const royaltiesCounters = await store.royalties.getAllRoyaltiesCounters(logger);
+    const studiosViewings = await store.studios.getAllStudiosViewings(logger);
     const response = Object.keys(studiosMap).map((studioId) => ({
       rightsownerId: studioId,
       rightsowner: studiosMap[studioId].name,
       royalty: Decimal.mul(
-        new Decimal(royaltiesCounters[studioId] || 0),
+        new Decimal(studiosViewings[studioId] || 0),
         new Decimal(studiosMap[studioId].payment),
       ).toNumber(),
-      viewings: royaltiesCounters[studioId] || 0,
+      viewings: studiosViewings[studioId] || 0,
     }));
     res.status(200).send(response);
   } catch (err) {
@@ -61,14 +61,14 @@ router.get('/payments/:studioId', async ({ params: { studioId }, store, logger }
   try {
     if (!studiosMap[studioId]) res.status(404).end();
     else {
-      const royaltiesCounter = await store.royalties.getRoyaltiesCounter(logger, studioId);
+      const viewings = await store.studios.getViewings(logger, studioId);
       res.status(200).send({
         rightsowner: studiosMap[studioId].name,
         royalty: Decimal.mul(
-          new Decimal(royaltiesCounter),
+          new Decimal(viewings),
           new Decimal(studiosMap[studioId].payment),
         ).toNumber(),
-        viewings: royaltiesCounter || 0,
+        viewings,
       });
     }
   } catch (err) {

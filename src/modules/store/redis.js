@@ -1,11 +1,11 @@
 const RedisInMemory = require('ioredis-mock');
 const Redis = require('ioredis');
 
-const increaseRoyaltiesCounter = (client) => (studioId) => client.incr(studioId);
-const getRoyaltiesCounter = (client) => async (studioId) => parseInt(
+const increaseViewings = (client) => (studioId) => client.incr(studioId);
+const getViewings = (client) => async (studioId) => parseInt(
   await client.get(studioId) || 0, 10,
 );
-const getAllRoyaltiesCounters = (client) => async () => {
+const getAllStudiosViewings = (client) => async () => {
   const keys = await client.keys('*');
   const multiCommandResponse = await client.multi(keys.map((key) => (['get', key]))).exec();
   // after using a multi operation values are in the format:
@@ -14,7 +14,7 @@ const getAllRoyaltiesCounters = (client) => async () => {
   const values = multiCommandResponse.map((element) => element[1]);
   return keys.reduce((acc, key, index) => ({ ...acc, [key]: parseInt(values[index], 10) }), {});
 };
-const resetAllCounters = (client) => () => client.flushall();
+const resetAllViewings = (client) => () => client.flushall();
 
 const errorHandler = (func) => async (logger, ...args) => {
   try {
@@ -28,11 +28,11 @@ const errorHandler = (func) => async (logger, ...args) => {
 };
 
 const init = (client) => ({
-  royalties: {
-    increaseRoyaltiesCounter: errorHandler(increaseRoyaltiesCounter(client)),
-    getRoyaltiesCounter: errorHandler(getRoyaltiesCounter(client)),
-    getAllRoyaltiesCounters: errorHandler(getAllRoyaltiesCounters(client)),
-    resetAllCounters: errorHandler(resetAllCounters(client)),
+  studios: {
+    increaseViewings: errorHandler(increaseViewings(client)),
+    getViewings: errorHandler(getViewings(client)),
+    getAllStudiosViewings: errorHandler(getAllStudiosViewings(client)),
+    resetAllViewings: errorHandler(resetAllViewings(client)),
   },
   getClient: () => client,
 });
@@ -43,8 +43,8 @@ const host = process.env.REDIS_HOST || '127.0.0.1';
 module.exports.initRedis = () => init(new Redis({ port, host }));
 module.exports.initInMemory = () => init(new RedisInMemory());
 
-module.exports.increaseRoyaltiesCounter = increaseRoyaltiesCounter;
-module.exports.getRoyaltiesCounter = getRoyaltiesCounter;
-module.exports.getAllRoyaltiesCounters = getAllRoyaltiesCounters;
-module.exports.resetAllCounters = resetAllCounters;
+module.exports.increaseViewings = increaseViewings;
+module.exports.getViewings = getViewings;
+module.exports.getAllStudiosViewings = getAllStudiosViewings;
+module.exports.resetAllViewings = resetAllViewings;
 module.exports.errorHandler = errorHandler;
