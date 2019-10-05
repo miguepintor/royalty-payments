@@ -1,6 +1,9 @@
 const request = require('supertest');
+const find = require('lodash.find');
 const store = require('../../src/modules/store');
 const { init: appInitilizator } = require('../../src/app');
+const { episodes } = require('../../resources/episodes');
+const { studios } = require('../../resources/studios');
 
 // Mocking the whole logger module
 jest.mock('../../src/modules/logger', () => ({ child: jest.fn() }));
@@ -32,16 +35,46 @@ describe('Integration Tests: app with redis', () => {
     });
   });
   describe('/royaltymanager/reset', () => {
-    it('Should reset all counters to 0 and the response status must be 202', async () => {
+    it('Should reset all counters to 0 and the response status must be 202 with empty body', async () => {
       await redisMock.set('aaaa', 23);
       const response = await request(app).post('/royaltymanager/reset').send({});
       expect(response.status).toEqual(202);
       expect(response.body).toEqual({});
       expect(await redisMock.keys('*')).toEqual([]);
     });
-    it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
+    it('When there is an error it should return a 500, "Internal server error" and log it', async () => {
       const appWithNoStore = appInitilizator();
       const response = await request(appWithNoStore).post('/royaltymanager/reset').send({});
+      expect(response.status).toEqual(500);
+      expect(response.text).toEqual('Internal server error');
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('/royaltymanager/viewing', () => {
+    it('When there is a validation error in the query it should return a 400 and the reason', async () => {
+      const response = await request(app).post('/royaltymanager/viewing').send({});
+      expect(response.status).toEqual(400);
+      expect(response.text).toEqual('');
+    });
+    it('Should increase in 1 the studio royalty counter specified by the episode and the response status must be 202 with empty body', async () => {
+      const sampleEpisode = episodes[0];
+      const sampleStudio = find(studios, { id: sampleEpisode.rightsowner });
+      const query = {
+        episode: sampleEpisode.id,
+        consumer: 'GUID',
+      };
+      const response = await request(app).post('/royaltymanager/viewing').send(query);
+      expect(response.status).toEqual(202);
+      expect(response.body).toEqual({});
+      expect(await redisMock.get(sampleStudio.id)).toEqual('1');
+    });
+    it('When there is a an error it should return a 500, "Internal server error" and log it', async () => {
+      const query = {
+        episode: episodes[0].id,
+        consumer: 'GUID',
+      };
+      const appWithNoStore = appInitilizator();
+      const response = await request(appWithNoStore).post('/royaltymanager/viewing').send(query);
       expect(response.status).toEqual(500);
       expect(response.text).toEqual('Internal server error');
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
