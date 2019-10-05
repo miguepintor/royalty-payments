@@ -26,4 +26,4 @@ const init = (store) => {
   return app;
 };
 
-module.exports.init = init;
+module.exports = init;

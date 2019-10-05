@@ -1,6 +1,6 @@
 const request = require('supertest');
 const store = require('../../src/modules/store');
-const { init: appInitilizator } = require('../../src/app');
+const appInitilizator = require('../../src/app');
 
 // Mocking the whole logger module
 jest.mock('../../src/modules/logger', () => ({ child: jest.fn() }));
