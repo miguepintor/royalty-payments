@@ -87,13 +87,13 @@ describe('Integration Tests: app with redis', () => {
         {
           rightsownerId: '665115721c6f44e49be3bd3e26606026',
           rightsowner: 'HBO',
-          royalty: 0,
+          royalty: 2808,
           viewings: 234,
         },
         {
           rightsownerId: '8d713a092ebf4844840cb90d0c4a2030',
           rightsowner: 'Sky UK',
-          royalty: 0,
+          royalty: 616.14,
           viewings: 42,
         },
         {
@@ -105,7 +105,7 @@ describe('Integration Tests: app with redis', () => {
         {
           rightsownerId: '49924ec6ec6c4efca4aa8b0779c89406',
           rightsowner: 'Fox',
-          royalty: 0,
+          royalty: 52.019999999999996,
           viewings: 3,
         },
       ]);
@@ -161,7 +161,7 @@ describe('Integration Tests: app with redis', () => {
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         rightsowner: 'HBO',
-        royalty: 0,
+        royalty: 2808,
         viewings: 234,
       });
     });
@@ -169,7 +169,6 @@ describe('Integration Tests: app with redis', () => {
       const response = await request(app).get('/royaltymanager/payments/8d713a092ebf4844840cb90d0c4a2030');
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
-        rightsownerId: '8d713a092ebf4844840cb90d0c4a2030',
         rightsowner: 'Sky UK',
         royalty: 0,
         viewings: 0,
