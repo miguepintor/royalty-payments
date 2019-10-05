@@ -68,14 +68,14 @@ describe('Redis store', () => {
     it('when the function passed as argument throws an error should log it and rethrow it', async () => {
       const sampleError = new Error('This is a sample error');
       const sampleFunc = () => { throw sampleError; };
-      await expect(errorHandler(sampleFunc, loggerMock)()).rejects.toThrow(sampleError);
+      await expect(errorHandler(sampleFunc)(loggerMock)).rejects.toThrow(sampleError);
       expect(loggerMock.info).toHaveBeenCalledTimes(0);
       expect(loggerMock.error).toHaveBeenCalledTimes(1);
       expect(loggerMock.error).toHaveBeenCalledWith({ err: sampleError }, '[Redis Store] Exception during the execution of a method');
     });
     it('when the function passed as argument returns a value it should return the same value', async () => {
       const sampleFunc = async (value) => value;
-      expect(await errorHandler(sampleFunc, loggerMock)(5)).toEqual(5);
+      expect(await errorHandler(sampleFunc)(loggerMock, 5)).toEqual(5);
       expect(loggerMock.error).toHaveBeenCalledTimes(0);
       expect(loggerMock.info).toHaveBeenCalledTimes(1);
       expect(loggerMock.info).toHaveBeenCalledWith('[Redis Store] Operation executed successfully');
