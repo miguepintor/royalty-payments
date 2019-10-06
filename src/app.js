@@ -15,7 +15,7 @@ const init = (store) => {
     req.store = store;
     next();
   });
-
+  app.use('/docs', express.static('docs'));
   app.use('/royaltymanager', royaltyManagerRoutes);
 
   app.use((err, req, res, next) => {

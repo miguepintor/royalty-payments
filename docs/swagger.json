@@ -1,0 +1,219 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Server which helps to record and calcualte royalty paymetns owed to Rights Owners based on viewing activity of customers. The code of this server is hosted in github [https://github.com/miguepintor/royalty-payments](https://github.com/miguepintor/royalty-payments).",
+    "version": "1.0.0",
+    "title": "Royalty Payments",
+    "contact": {
+      "email": "miguepintor@hotmail.com"
+    }
+  },
+  "host": "localhost",
+  "tags": [
+    {
+      "name": "royaltymanager",
+      "description": "Manages the royalties owed to Rights Owners"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/royaltymanager/reset": {
+      "post": {
+        "tags": [
+          "royaltymanager"
+        ],
+        "summary": "Reset al viewings",
+        "description": "The system will reset all Rights Owners viewings to 0.",
+        "produces": [
+          "text/plain"
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation."
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "string",
+              "example": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "/royaltymanager/viewing": {
+      "post": {
+        "tags": [
+          "royaltymanager"
+        ],
+        "summary": "Adds one viewing to the Rights Owner of the episode",
+        "description": "The system will internally increase the viewings for the Rights Owner of that episode.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Object which contains the customer and the episode identifiers.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "customer",
+                "episode"
+              ],
+              "properties": {
+                "customer": {
+                  "type": "string",
+                  "example": "a89dfg9dfg9hhhd",
+                  "description": "Customer Id."
+                },
+                "episode": {
+                  "type": "string",
+                  "example": "6a1db5d6610a4c048d3df9a6268c68dc",
+                  "description": "Episode Id. It MUST exist in the system. All available episodes can be found [here](https://github.com/miguepintor/royalty-payments/blob/master/resources/episodes.json)."
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful operation."
+          },
+          "400": {
+            "description": "Validation error.",
+            "schema": {
+              "type": "string",
+              "description": "Message with the validation rule not fulfilled.",
+              "example": "child \"customer\" fails because [\"customer\" is required]"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "string",
+              "example": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "/royaltymanager/payments": {
+      "get": {
+        "tags": [
+          "royaltymanager"
+        ],
+        "summary": "Retrieves all royalties owed to all Rights Owners",
+        "description": "The system will return a list of objects with all the royalties owed in GBP and the viewings.",
+        "produces": [
+          "text/plain",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "rightsownerId": {
+                    "type": "string",
+                    "description": "Rights Owner Id.",
+                    "example": "665115721c6f44e49be3bd3e26606026"
+                  },
+                  "rightsowner": {
+                    "type": "string",
+                    "description": "Rights Owner name.",
+                    "example": "HBO"
+                  },
+                  "royalty": {
+                    "type": "number",
+                    "description": "Payment owed to the studio in GBP. It is the result of multiplying the viewings by the fee.",
+                    "example": 48
+                  },
+                  "viewings": {
+                    "type": "number",
+                    "description": "Number of episodes viewed.",
+                    "example": 4
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "string",
+              "example": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "/royaltymanager/payments/{studioId}": {
+      "get": {
+        "tags": [
+          "royaltymanager"
+        ],
+        "summary": "Retrieves the royalty owed to a specific Rights Owner",
+        "description": "The system will return an objects with the royalty owed in GBP and the viewings.",
+        "produces": [
+          "text/plain",
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "studioId",
+            "in": "path",
+            "required": true,
+            "description": "Studio identifier. All available studios can be found [here](https://github.com/miguepintor/royalty-payments/blob/master/resources/studios.json).",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rightsowner": {
+                  "type": "string",
+                  "description": "Rights Owner name.",
+                  "example": "HBO"
+                },
+                "royalty": {
+                  "type": "number",
+                  "description": "Payment owed to the studio in GBP. It is the result of multiplying the viewings by the fee.",
+                  "example": 48
+                },
+                "viewings": {
+                  "type": "number",
+                  "description": "Number of episodes viewed.",
+                  "example": 4
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Studio id not found."
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "type": "string",
+              "example": "Internal server error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
