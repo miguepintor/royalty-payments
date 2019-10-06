@@ -6,7 +6,10 @@
 ## Prerequisites
 To set up the project you need first to install: [node](https://nodejs.org/en/download/) and [npm](https://www.npmjs.com/get-npm).
 
-After that, just run ```npm ci```
+After that, just run:
+```bash
+npm ci
+```
 
 ## Available Env Vars
 |Name|Description|
@@ -17,15 +20,21 @@ After that, just run ```npm ci```
 |REDIS_HOST|If you are NOT running the app in local mode (See next section) you can specify the host name of the real redis cache using this env var. By default is 127.0.0.1|
 ## Testing the app
 Running the following command the syntax will be checked against eslint (airbnb style guide) and all tests will be executed. A coverage report will be shown and the end of the command.
-```npm test```
+```bash
+npm test
+```
 
 ## Running the app
 ### Locally with in memory redis
 Just execute this command:
-```npm run local```
+```bash
+npm run local
+```
 ### Against a real redis cache
 Take into account that you could set up redis and the certain server properties through environment variables. To run the server against a real redis cache just execute this command:
-```npm start```
+```bash
+npm start
+```
 
 # API specification
 In docs folder you can find the api definition in `swagger.json` file. It is written down in swagger 2.0.
