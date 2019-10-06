@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-ECR_URI="201335378792.dkr.ecr.eu-west-1.amazonaws.com/royalty-ecr"
+echo -n "Enter ECR URI > "
+read ECR_URI
+
 TAG="$(date +%Y-%m-%d.%H.%M.%S)"
 IMAGE_URI="${ECR_URI}:${TAG}"
 

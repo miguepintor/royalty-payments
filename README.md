@@ -44,3 +44,4 @@ When the server is running the doc is also available in `\docs` endpoint.
 In the `deployment` folder there is a script which allows you to deploy the system in ecs fargate service.
 But first you will need to create the infrastructure which can be found in this [repo](https://github.com/miguepintor/royalty-payments-infrastructure).
 After that it is just a matter of execute `deploy.sh`.
+During the execution you will be prompted to enter your ECR URI, example: 201335378792.dkr.ecr.eu-west-1.amazonaws.com/royalty-ecr
