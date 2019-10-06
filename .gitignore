@@ -10,5 +10,5 @@ coverage
 # dotenv environment variables file
 .env
 
-# visual studio config file
-launch.json
+# visual studio config folder
+.vscode
