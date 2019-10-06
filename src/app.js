@@ -15,6 +15,7 @@ const init = (store) => {
     req.store = store;
     next();
   });
+  app.get('/status', (req, res) => { res.status(200).send('Service Alive'); });
   app.use('/docs', express.static('docs'));
   app.use('/royaltymanager', royaltyManagerRoutes);
 
