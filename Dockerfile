@@ -11,7 +11,7 @@ RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositor
         py-pip \
         bash \
     && pip install --upgrade pip \
-    && npm ci \
+    && npm cit \
     && npm prune --production \
     && rm -rf test \
     && rm -rf deployment
