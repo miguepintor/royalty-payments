@@ -39,3 +39,8 @@ npm start
 # API specification
 In docs folder you can find the api definition in `swagger.json` file. It is written down in swagger 2.0.
 When the server is running the doc is also available in `\docs` endpoint.
+
+# Deployment
+In the `deployment` folder there is a script which allows you to deploy the system in ecs fargate service.
+But first you will need to create the infrastructure which can be found in this [repo](https://github.com/miguepintor/royalty-payments-infrastructure).
+After that it is just a matter of execute `deploy.sh`.

@@ -12,3 +12,6 @@ coverage
 
 # visual studio config folder
 .vscode
+
+# deployment temporary files
+taskDefinitionWithImage.*

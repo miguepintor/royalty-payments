@@ -1,0 +1,52 @@
+{
+    "family": "royalties-task-int",
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "taskRoleArn": "arn:aws:iam::201335378792:role/royalties-task-role-int",
+    "executionRoleArn": "arn:aws:iam::201335378792:role/royalties-task-role-int",
+    "containerDefinitions": [
+        {
+            "name": "royalties-api",
+            "image": "IMAGE_URI",
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "/apps/int/royalties-service",
+                    "awslogs-region": "eu-west-1",
+                    "awslogs-stream-prefix": "royalties-service"
+                }
+            },
+            "environment": [
+                {
+                    "name": "REDIS_HOST",
+                    "value": "royalties-redis-int.4wmgs9.ng.0001.euw1.cache.amazonaws.com"
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE",
+        "EC2"
+    ],
+    "tags": [
+        {
+            "key": "Name",
+            "value": "royalties-task-int"
+        },{
+            "key": "Environment",
+            "value": "int"
+        },{
+            "key": "Managed",
+            "value": "terraform"
+        }
+    ]
+}
